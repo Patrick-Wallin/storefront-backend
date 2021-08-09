@@ -3,6 +3,12 @@ import { Product, ProductStore } from '../../../src/models/products';
 const store = new ProductStore()
 
 describe("Product Model", () => {
+  const name: string = "Bill Gates PC";
+  const price: number = 500.99;
+  const categoryId: number = 12;
+
+  let productId: number = 0;
+
   it('should have an index method', () => {
     expect(store.index).toBeDefined();
   });
@@ -29,12 +35,13 @@ describe("Product Model", () => {
   });
 
   it('create method should add a product', async () => {
-    const result = await store.create({
-      name: "Bill Gates PC",
-      price: 500.99,
-      category_id: 12
+    productId = await store.create({
+      name: name,
+      price: price,
+      category_id: categoryId
     });
-    expect(result).toEqual(1);
+
+    expect(productId).toBeGreaterThanOrEqual(1);
   });
 
   it('index method should return one record after creating product', async () => {
@@ -43,16 +50,18 @@ describe("Product Model", () => {
   });
 
   it('show method should return one record after creating product', async () => {
-    const result = await store.show(1);
+    const result = await store.show(productId);
     expect(result).toEqual({
-        id : 1,
-        name: "Bill Gates PC",
-        price: 500.99,
-        category_id: 12
+        id : productId,
+        name: name,
+        price: price,
+        category_id: categoryId
       });    
-
-
   });
 
+  it('delete method should remove product', async () => {
+    const result = await store.delete(productId);
+    expect(result).toEqual(1);
+  });
 
 });

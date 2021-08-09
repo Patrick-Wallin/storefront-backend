@@ -1,54 +1,140 @@
 # Storefront Backend Project
+This is a backend API project that is building in NodeJS.  It would provide information to the frontend developer.  The `REQUIREMENTS.md` would show database schema and API route information.  We will provide some example below.
 
-## Getting Started
+## Table of Contents
+* [General Info](#general-information)
+* [Technologies](#technologies)
+* [Install](#install)
+* [Instruction of API Request](#instruction-of-api-request)
+* [Purpose of this project](#purpose-of-this-project)
+* [Contact](#contact)
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+## General Information
+Front-end Developers would have an opportunity to gather or create data from users, products, or orders tables.  
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+Patrick would gain his experience developing this backend API while learning how to set up and work with Express server and Postgres including NPM, TypeScript, Jasmine, Winston, migration, models, handlers, RESTful API, JWT, bcrypt, and node.js.
 
-## Steps to Completion
+## Technologies 
+- TypeScript
+- Express
+- ESLint
+- Prettier
+- Jasmine
+- Winston
+- NPM
+- NodeJS
+- Migration
+- JWT
+- BCrypt
 
-### 1. Plan to Meet Requirements
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+## Install
+Install all the modules
+```
+npm install
+```
+Build or Convert TypeScript to JavaScript
+```
+npm run build
+```
+Start the server which will start nodemon based on src/index.ts
+```
+npm run start-ts 
+```
+Start the server which will start node based on dist/src/index.js
+```
+npm run start-js 
+```
+Run the test including running the migration such as down and up and Jasmine
+```
+npm run test  
+```
+Start the server based on JavaScript, not TypeScript
+```
+node dist/index.js
+```
+To keep the code look clean and nice, run the following command:
+```
+npm run prettier
+```
+To check any variable or analyze any code that may look the problem, run the following command:
+```
+npm run lint
+```
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+## Instruction of API Request
+Users 
+- Create new user [POST]
+-- Example: http://localhost:3000/user (along with POST information)
+-- Input: firstname, lastname, password 
+-- Authorization: none
+-- Return: token authorization code
+- Get all list of users [GET]
+-- Example: http//localhost:3000/users
+-- Input: none 
+-- Authorization: Yes 
+-- Return: list of users in JSON
+- Get user's information based on user's id [GET]
+-- Example: http://localhost:3000/user/1
+-- Input: user id
+-- Authorization: Yes 
+-- Return: user's information in JSON
+- Create user after login [POST]
+-- Example: http://localhost:3000/user-after-login
+-- Input: firstname, lastname, password
+-- Authorization: Yes 
+-- Return: token authorization code
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+Categories 
+- Get list of category [GET]
+-- Example: http://localhost:3000/categories
+-- Input: none
+-- Authorization: none
+-- Return: list of category in JSON
+- Get information about category based on category's id [GET]
+-- Example: http://localhost:3000/category/1
+-- Input: category id
+-- Authorization: none
+-- Return: category's information in JSON
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+Orders 
+- Get list of orders that are active based on user's id [GET]
+-- Example: http://localhost:3000/orders/1
+-- Input: user id 
+-- Authorization: Yes
+-- Return: list of active orders in JSON
+- Get list of orders that are completed based on user's id [GET]
+-- Example: http://localhost:3000/orders/1
+-- Input: user id 
+-- Authorization: Yes
+-- Return: list of completed orders in JSON
 
-### 2.  DB Creation and Migrations
+Products 
+- Get list of products [GET]
+-- Example: http://localhost:3000/products
+-- Input: none
+-- Authorization: none
+-- Return: list of products in JSON
+- Get information about product based on product id [GET]
+-- Example: http://localhost:3000/product/1
+-- Input: product id
+-- Authorization: none
+-- Return: product's information in JSON
+- Get top five popular products [GET]
+-- Example: http://localhost:3000/top-five-popular-products
+-- Input: none
+-- Authorization: none
+-- Return: list of top five popular products in JSON
+- Get list of products based on category's id [GET]
+-- Example: http://localhost:3000/product-category/1
+-- Input: category's id
+-- Authorization: none
+-- Return: information about products in JSON
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+## Purpose of this project
+This is one of the Full Stack JavaScript Developer's project for Udacity.  It gives Patrick an opportunity to gain experience and knowledge of the following: Express, NodeJS, NPM, Jasmine, Winston, Migration, Models, Handlers, RESTful API, JWT, BCrypt, and TypeScript.
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+## Contact
+Created by [Patrick Wallin](https://www.linkedin.com/in/patrick-wallin) - feel free to contact me!
 
-### 3. Models
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
-
-### 4. Express Handlers
-
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
-
-### 5. JWTs
-
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
-
-### 6. QA and `README.md`
-
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
-
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!

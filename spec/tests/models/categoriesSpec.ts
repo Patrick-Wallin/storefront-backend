@@ -16,7 +16,7 @@ describe("Category Model", () => {
     expect(result.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('show method should return the correct category', async () => {
+  it('show method should return the correct category (12)', async () => {
     const result = await store.show(12);
     expect(result).toEqual({
       id: 12,

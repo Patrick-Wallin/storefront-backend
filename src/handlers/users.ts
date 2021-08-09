@@ -1,13 +1,18 @@
 import express, { Request, Response } from 'express';
 import { User, UserStore } from '../models/users';
 import jwt from 'jsonwebtoken';
-import verifyIdToken from './general';
+import verifyAuthToken from './general';
 
 const store = new UserStore();
 
 const index = async (_req: Request, res: Response) => {
-  const users = await store.index();
-  res.json(users);
+  try {
+    const users = await store.index();
+    res.json(users);
+  } catch (err) {
+    res.status(400);
+    res.json(err);
+  }
 };
 
 const createUser = async (req: Request, res: Response) => {
@@ -27,11 +32,26 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+const createUserAfterLogin = async (req: Request, res: Response) => {
+  try {
+    const user: User = {
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      password: req.body.password,
+    };
+
+    const newUser = await store.create(user);
+    res.json(newUser);
+  } catch (err) {
+    res.status(400);
+    res.json(err);
+  }
+};
+
 const showUser = async (req: Request, res: Response) => {
   try {
-    const newUser = await store.show(req.body.id);
-    var token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET!);
-    res.json(token);
+    const user = await store.show(parseInt(req.params.id));
+    res.json(user);
   } catch (err) {
     res.status(400);
     res.json(err);
@@ -39,9 +59,10 @@ const showUser = async (req: Request, res: Response) => {
 };
 
 const userRoutes = (app: express.Application) => {
-  app.get('/users', index);
-  app.get('/user/:id', verifyIdToken, showUser);
+  app.get('/users', verifyAuthToken, index);
+  app.get('/user/:id', verifyAuthToken, showUser);
   app.post('/user', createUser);
+  app.post('/user-after-login', verifyAuthToken, createUserAfterLogin);
 };
 
 export default userRoutes;

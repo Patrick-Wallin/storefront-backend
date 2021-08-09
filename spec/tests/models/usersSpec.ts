@@ -3,6 +3,19 @@ import { User, UserStore } from '../../../src/models/users';
 const store = new UserStore()
 
 describe("User Model", () => {
+  const firstName = "Bill";
+  const lastName = "Gates";
+  
+  let userId : number = 0;
+
+  beforeAll(async() => {
+    const result = await store.deleteAll();
+  });
+
+  afterAll(async() => {
+    const result = await store.deleteAll();
+  });
+
   it('should have an index method', () => {
     expect(store.index).toBeDefined();
   });
@@ -21,15 +34,14 @@ describe("User Model", () => {
   });
 
   it('create method should add a user', async () => {
-    const result = await store.create({
-      firstname: "Patrick",
-      lastname: "Unknown"
+    const resultFromCreate = await store.create({
+      firstname: firstName,
+      lastname: lastName
     });
-    expect(result).toEqual({
-      id: 1,
-      firstname: "Patrick",
-      lastname: "Unknown"
-    });
+
+    userId = await store.getUserIdBasedOnNames(firstName, lastName);
+
+    expect(userId).toBeGreaterThanOrEqual(1);
   });
 
   it('index method should return one record after creating user', async () => {
@@ -38,15 +50,15 @@ describe("User Model", () => {
   });
 
   it('show method should return one record after creating user', async () => {
-    const result = await store.show(1);
+    const result = await store.show(userId);
     expect(result).toEqual({
-      firstname: "Patrick",
-      lastname: "Unknown"
+      firstname: firstName,
+      lastname: lastName
     });    
   });
 
-  it('delete method should remove user (1)', async () => {
-    const result = await store.delete(1);
+  it('delete method should remove user', async () => {
+    const result = await store.delete(userId);
     expect(result).toEqual(1);
   });
 

@@ -28,12 +28,32 @@ export class UserStore {
       const conn = await client.connect();
 
       const result = await conn.query(sql, [id]);
-
       conn.release();
 
-      return result.rows[0];
+      if (result.rowCount == 0) throw new Error(`Could not find user ${id}`);
+      else return result.rows[0];
     } catch (err) {
       throw new Error(`Could not find user ${id}. Error: ${err}`);
+    }
+  }
+
+  async getUserIdBasedOnNames(
+    firstName: string,
+    lastName: string
+  ): Promise<number> {
+    try {
+      const sql = 'SELECT id FROM users WHERE firstname=($1) and lastname=($2)';
+      const conn = await client.connect();
+
+      const result = await conn.query(sql, [firstName, lastName]);
+      conn.release();
+
+      if (result.rowCount == 0) return 0;
+      else return result.rows[0].id;
+    } catch (err) {
+      throw new Error(
+        `Could not find user ${firstName} ${lastName}. Error: ${err}`
+      );
     }
   }
 
@@ -61,8 +81,6 @@ export class UserStore {
     }
   }
 
-  // create user AFTER login to check for validation!
-
   async delete(id: number): Promise<number> {
     try {
       const sql = 'DELETE FROM users WHERE id=($1)';
@@ -75,6 +93,21 @@ export class UserStore {
       return result.rowCount;
     } catch (err) {
       throw new Error(`Could not delete user ${id}. Error: ${err}`);
+    }
+  }
+
+  async deleteAll(): Promise<number> {
+    try {
+      const sql = 'DELETE FROM users';
+      const conn = await client.connect();
+
+      const result = await conn.query(sql);
+
+      conn.release();
+
+      return result.rowCount;
+    } catch (err) {
+      throw new Error(`Could not delete any user. Error: ${err}`);
     }
   }
 }

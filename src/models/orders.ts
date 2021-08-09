@@ -9,27 +9,25 @@ export type Order = {
 };
 
 export class OrderStore {
-  async create(product: Order): Promise<Order> {
+  async create(order: Order): Promise<number> {
     try {
       const sql =
         'INSERT INTO orders (product_id, quantity, user_id, status) VALUES($1, $2, $3, $4) RETURNING *';
       const conn = await client.connect();
 
       const result = await conn.query(sql, [
-        product.product_id,
-        product.quantity,
-        product.user_id,
-        product.status,
+        order.product_id,
+        order.quantity,
+        order.user_id,
+        order.status,
       ]);
-
-      const book = result.rows[0];
 
       conn.release();
 
-      return book;
+      return result.rows[0].id;
     } catch (err) {
       throw new Error(
-        `Could not add new order ${product.product_id}. Error: ${err}`
+        `Could not add new order ${order.product_id}. Error: ${err}`
       );
     }
   }
@@ -63,18 +61,33 @@ export class OrderStore {
     }
   }
 
-  async changeOrderToBeCompletedByOrder(id: number): Promise<Order[]> {
+  async changeOrderToBeCompletedByOrder(id: number): Promise<number> {
     try {
-      const sql = `UPDATE orders SET status = ${process.env.COMPLETED_ORDER} WHERE order=($1)`;
+      const sql = `UPDATE orders SET status = ${process.env.COMPLETED_ORDER} WHERE id=($1)`;
       const conn = await client.connect();
 
       const result = await conn.query(sql, [id]);
 
       conn.release();
 
-      return result.rows;
+      return result.rowCount;
     } catch (err) {
-      throw new Error(`Could not update orders ${id}. Error: ${err}`);
+      throw new Error(`Could not update order status ${id}. Error: ${err}`);
+    }
+  }
+
+  async delete(id: number): Promise<number> {
+    try {
+      const sql = 'DELETE FROM orders WHERE id=($1)';
+      const conn = await client.connect();
+
+      const result = await conn.query(sql, [id]);
+
+      conn.release();
+
+      return result.rowCount;
+    } catch (err) {
+      throw new Error(`Could not delete order ${id}. Error: ${err}`);
     }
   }
 }

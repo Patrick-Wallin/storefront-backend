@@ -38,14 +38,16 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     firstname VARCHAR(25),
     lastname VARCHAR(25),
-    password VARCHAR
+    password VARCHAR,
+    UNIQUE (firstname, lastname)
 );
 
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
     price NUMERIC(10,2),
-    category_id int REFERENCES categories(id)
+    category_id int REFERENCES categories(id),
+    UNIQUE (name, category_id)
 );
 
 CREATE TABLE orders (

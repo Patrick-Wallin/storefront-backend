@@ -26,11 +26,15 @@ export class ProductStore {
       const sql = 'SELECT * FROM products WHERE id=($1)';
       const conn = await client.connect();
 
-      const result = await conn.query(sql, [id]);
+      let result = await conn.query(sql, [id]);
 
       conn.release();
 
-      return result.rows[0];
+      if (result.rowCount == 0) throw new Error(`Could not find product ${id}`);
+      else {
+        result.rows[0].price = Number(result.rows[0].price);
+        return result.rows[0];
+      }
     } catch (err) {
       throw new Error(`Could not find product ${id}. Error: ${err}`);
     }
@@ -50,12 +54,10 @@ export class ProductStore {
 
       conn.release();
 
-      console.log(result);
-
-      if(result.rowCount > 0) {
-          return result.rows[0].id;
-      }else {
-          return 0;
+      if (result.rowCount > 0) {
+        return result.rows[0].id;
+      } else {
+        throw new Error(`Could not add new product ${product.name}. `);
       }
     } catch (err) {
       throw new Error(
@@ -78,7 +80,7 @@ export class ProductStore {
     }
   }
 
-  async showByCategory(category_id: string): Promise<Product> {
+  async showByCategory(category_id: number): Promise<Product[]> {
     try {
       const sql = 'SELECT * FROM products WHERE category_id=($1)';
       const conn = await client.connect();
@@ -87,9 +89,39 @@ export class ProductStore {
 
       conn.release();
 
-      return result.rows[0];
+      return result.rows;
     } catch (err) {
       throw new Error(`Could not find product ${category_id}. Error: ${err}`);
+    }
+  }
+
+  async delete(id: number): Promise<number> {
+    try {
+      const sql = 'DELETE FROM products WHERE id=($1)';
+      const conn = await client.connect();
+
+      const result = await conn.query(sql, [id]);
+
+      conn.release();
+
+      return result.rowCount;
+    } catch (err) {
+      throw new Error(`Could not delete product ${id}. Error: ${err}`);
+    }
+  }
+
+  async deleteAll(): Promise<number> {
+    try {
+      const sql = 'DELETE FROM products';
+      const conn = await client.connect();
+
+      const result = await conn.query(sql);
+
+      conn.release();
+
+      return result.rowCount;
+    } catch (err) {
+      throw new Error(`Could not delete any product. Error: ${err}`);
     }
   }
 }

@@ -9,13 +9,13 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Show route: '/product/:id' [GET] 
 - Create route: '/product' [POST][token required]
 - Show route - Top 5 most popular products: '/top-five-popular-products' [GET]
-- Show route - Products by category (args: product category): '/products/:categoryid' [GET]
+- Show route - Products by category (args: product category): '/product-category/:categoryid' [GET]
 
 #### Users
 - Index route: '/users' [GET] [token required]
 - Show route: '/user/:id' [GET][token required]
 - Create route: '/user' [POST]
-- Create After Login route: '/user [POST][token required]
+- Create After Login route: '/user-after-login' [POST][token required]
 
 #### Orders
 - Show route - Current Order by user (args: user id): '/orders/:userid' [GET][token required]

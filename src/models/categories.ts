@@ -28,7 +28,9 @@ export class CategoryStore {
 
       conn.release();
 
-      return result.rows[0];
+      if (result.rowCount == 0)
+        throw new Error(`Could not find category ${id}`);
+      else return result.rows[0];
     } catch (err) {
       throw new Error(`Could not find category ${id}. Error: ${err}`);
     }
