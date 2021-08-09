@@ -4,6 +4,8 @@ This is a backend API project that is building in NodeJS.  It would provide info
 ## Table of Contents
 * [General Info](#general-information)
 * [Technologies](#technologies)
+* [Set up database](#set-up-database)
+* [Establish Environment Variables](#establish-environment-variables)
 * [Install](#install)
 * [Instruction of API Request](#instruction-of-api-request)
 * [Purpose of this project](#purpose-of-this-project)
@@ -27,6 +29,48 @@ Patrick would gain his experience developing this backend API while learning how
 - JWT
 - BCrypt
 
+## Set up database
+
+Install docker
+- Go to [Docker] (https://docs.docker.com/get-docker/)
+
+Run docker with postgres
+- Go to root directory in your command
+- Type the following: docker-compose up
+- It will establish the port as 5432.
+
+Create database and user
+- Go to new command or terminal
+- Type the following: psl -U postgres
+- CREATE USER store_user WITH PASSWORD 'storeuserpassword';
+- Then do the following to create database
+  - CREATE DATABASE storefront_test;
+
+Connect to the database
+- Type the following: \c storefront_test
+
+Grant all priviledges
+- Type the following: GRANT ALL PRIVILEDGES ON DATABASE storefront_test TO  store_user;
+
+Establish new tables on the database, storefront_test
+- Open new terminal and change to the root directory of this project
+- Type the following at the command: npm run migrate-up
+
+## Environment Variables
+- Create new file called .env on your root directory
+- Open the file in your editor
+- Copy the following in your file except you would need to change few things
+  - POSTGRES_HOST=127.0.0.1
+  - POSTGRES_DB=storefront_dev
+  - POSTGRES_TEST_DB=storefront_test
+  - POSTGRES_USER=postgres
+  - POSTGRES_PASSWORD=postgres
+  - ENV=test
+  - BCRYPT_PASSWORD=your-favorite-password
+  - SALT_ROUNDS=10
+  - TOKEN_SECRET=your-token-secret-words
+  - ACTIVE_ORDER=1
+  - COMPLETED_ORDER=2
 
 ## Install
 Install all the modules
