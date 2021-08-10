@@ -17,15 +17,20 @@ const index = async (_req: Request, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const user: User = {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      password: req.body.password,
-    };
+    if (!req.body.firstname || !req.body.lastname) {
+      res.status(400);
+      res.json('firstname and lastname are required.');
+    } else {
+      const user: User = {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: req.body.password,
+      };
 
-    const newUser = await store.create(user);
-    var token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET!);
-    res.json(token);
+      const newUser = await store.create(user);
+      var token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET!);
+      res.json(token);
+    }
   } catch (err) {
     res.status(400);
     res.json(err);

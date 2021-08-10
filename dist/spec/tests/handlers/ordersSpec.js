@@ -44,23 +44,26 @@ var supertest_1 = __importDefault(require("supertest"));
 var products_1 = require("../../../src/models/products");
 var users_1 = require("../../../src/models/users");
 var orders_1 = require("../../../src/models/orders");
+var order_products_1 = require("../../../src/models/order_products");
 var request = supertest_1.default(server_1.default);
 var store = new products_1.ProductStore();
 var userStore = new users_1.UserStore();
 var orderStore = new orders_1.OrderStore();
-describe('Testing Products - API', function () {
+var orderProductsStore = new order_products_1.OrderProductsStore();
+describe('Testing Orders - API', function () {
     var _this = this;
-    var name = "Cyberpower PC";
-    var price = 1450.75;
+    var name = ["Cyberpower PC", "Bill Gates PC"];
+    var price = [1450.75, 500.78];
     var categoryId = 12;
     var firstName = "Maria";
     var lastName = "Tester";
     var password = "Maria-Tester";
     var quantity = 500;
     var token = '';
-    var productId = 0;
+    var productId = new Array();
     var userId = 0;
-    var orderId = new Array();
+    var orderProductsId = new Array();
+    var orderId = 0;
     beforeAll(function () { return __awaiter(_this, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
@@ -72,35 +75,50 @@ describe('Testing Products - API', function () {
                     return [4 /*yield*/, userStore.getUserIdBasedOnNames(firstName, lastName)];
                 case 2:
                     userId = _a.sent();
-                    return [4 /*yield*/, request.post('/product').set('Authorization', 'Bearer ' + token).send({ name: name, price: price, category_id: categoryId })];
+                    return [4 /*yield*/, request.post('/product').set('Authorization', 'Bearer ' + token).send({ name: name[0], price: price[0], category_id: categoryId })];
                 case 3:
                     response = _a.sent();
-                    productId = response.body;
+                    productId.push(response.body);
+                    return [4 /*yield*/, request.post('/product').set('Authorization', 'Bearer ' + token).send({ name: name[1], price: price[1], category_id: categoryId })];
+                case 4:
+                    response = _a.sent();
+                    productId.push(response.body);
                     return [2 /*return*/];
             }
         });
     }); });
     afterAll(function () { return __awaiter(_this, void 0, void 0, function () {
-        var result, i;
+        var result, i, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     i = 0;
                     _a.label = 1;
                 case 1:
-                    if (!(i < orderId.length)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, orderStore.delete(orderId[i])];
+                    if (!(i < orderProductsId.length)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, orderProductsStore.delete(orderProductsId[i])];
                 case 2:
                     result = _a.sent();
                     _a.label = 3;
                 case 3:
                     i++;
                     return [3 /*break*/, 1];
-                case 4: return [4 /*yield*/, store.delete(productId)];
+                case 4: return [4 /*yield*/, orderStore.delete(orderId)];
                 case 5:
                     result = _a.sent();
-                    return [4 /*yield*/, userStore.delete(userId)];
+                    i = 0;
+                    _a.label = 6;
                 case 6:
+                    if (!(i < productId.length)) return [3 /*break*/, 9];
+                    return [4 /*yield*/, store.delete(productId[i])];
+                case 7:
+                    result = _a.sent();
+                    _a.label = 8;
+                case 8:
+                    i++;
+                    return [3 /*break*/, 6];
+                case 9: return [4 /*yield*/, userStore.delete(userId)];
+                case 10:
                     result = _a.sent();
                     return [2 /*return*/];
             }
@@ -137,15 +155,13 @@ describe('Testing Products - API', function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, orderStore.create({
-                        product_id: productId,
-                        quantity: quantity,
                         user_id: userId,
                         status: parseInt(process.env.ACTIVE_ORDER)
                     })];
                 case 1:
                     orderIdFromStore = _a.sent();
+                    orderId = orderIdFromStore;
                     expect(orderIdFromStore).toBeGreaterThanOrEqual(1);
-                    orderId.push(orderIdFromStore);
                     return [2 /*return*/];
             }
         });
@@ -167,7 +183,7 @@ describe('Testing Products - API', function () {
         var rowsToBeUpdated;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, orderStore.changeOrderToBeCompletedByOrder(orderId[0])];
+                case 0: return [4 /*yield*/, orderStore.changeOrderToBeCompletedByOrder(orderId)];
                 case 1:
                     rowsToBeUpdated = _a.sent();
                     expect(rowsToBeUpdated).toBeGreaterThanOrEqual(1);
@@ -190,49 +206,61 @@ describe('Testing Products - API', function () {
     }); });
     // top five popular! 
     it('Show Top Five Popular. get as /top-five-popular-products', function () { return __awaiter(_this, void 0, void 0, function () {
-        var orderIdFromStore, response;
+        var orderProductIdFromStore, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, orderStore.create({
-                        product_id: productId,
-                        quantity: 40,
-                        user_id: userId,
-                        status: parseInt(process.env.ACTIVE_ORDER)
+                case 0: return [4 /*yield*/, orderProductsStore.create({
+                        order_id: orderId,
+                        product_id: productId[0],
+                        quantity: 50
                     })];
                 case 1:
-                    orderIdFromStore = _a.sent();
-                    orderId.push(orderIdFromStore);
-                    return [4 /*yield*/, orderStore.create({
-                            product_id: productId,
-                            quantity: 100,
-                            user_id: userId,
-                            status: parseInt(process.env.ACTIVE_ORDER)
+                    orderProductIdFromStore = _a.sent();
+                    orderProductsId.push(orderProductIdFromStore);
+                    return [4 /*yield*/, orderProductsStore.create({
+                            order_id: orderId,
+                            product_id: productId[0],
+                            quantity: 100
                         })];
                 case 2:
-                    orderIdFromStore = _a.sent();
-                    orderId.push(orderIdFromStore);
-                    return [4 /*yield*/, orderStore.create({
-                            product_id: productId,
-                            quantity: 1,
-                            user_id: userId,
-                            status: parseInt(process.env.ACTIVE_ORDER)
+                    orderProductIdFromStore = _a.sent();
+                    orderProductsId.push(orderProductIdFromStore);
+                    return [4 /*yield*/, orderProductsStore.create({
+                            order_id: orderId,
+                            product_id: productId[1],
+                            quantity: 25
                         })];
                 case 3:
-                    orderIdFromStore = _a.sent();
-                    orderId.push(orderIdFromStore);
-                    return [4 /*yield*/, orderStore.create({
-                            product_id: productId,
-                            quantity: 5,
-                            user_id: userId,
-                            status: parseInt(process.env.ACTIVE_ORDER)
+                    orderProductIdFromStore = _a.sent();
+                    orderProductsId.push(orderProductIdFromStore);
+                    return [4 /*yield*/, orderProductsStore.create({
+                            order_id: orderId,
+                            product_id: productId[1],
+                            quantity: 75
                         })];
                 case 4:
-                    orderIdFromStore = _a.sent();
-                    orderId.push(orderIdFromStore);
-                    return [4 /*yield*/, request.get("/top-five-popular-products")];
+                    orderProductIdFromStore = _a.sent();
+                    orderProductsId.push(orderProductIdFromStore);
+                    return [4 /*yield*/, orderProductsStore.create({
+                            order_id: orderId,
+                            product_id: productId[1],
+                            quantity: 5
+                        })];
                 case 5:
+                    orderProductIdFromStore = _a.sent();
+                    orderProductsId.push(orderProductIdFromStore);
+                    return [4 /*yield*/, orderProductsStore.create({
+                            order_id: orderId,
+                            product_id: productId[1],
+                            quantity: 1
+                        })];
+                case 6:
+                    orderProductIdFromStore = _a.sent();
+                    orderProductsId.push(orderProductIdFromStore);
+                    return [4 /*yield*/, request.get("/top-five-popular-products")];
+                case 7:
                     response = _a.sent();
-                    expect(response.body).toHaveSize(5);
+                    expect(response.body).toHaveSize(2);
                     return [2 /*return*/];
             }
         });

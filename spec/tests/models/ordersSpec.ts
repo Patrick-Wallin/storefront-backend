@@ -59,13 +59,19 @@ describe("Order Model", () => {
   });
 
   it('create method should add an order', async () => {
+      /*
     orderId = await store.create({
       product_id: productId,
       quantity: orderQuantity,
       user_id: userId!,
       status: parseInt(process.env.ACTIVE_ORDER!)
     });
-    expect(orderId).toBeGreaterThanOrEqual(1);
+    */
+    orderId = await store.create({
+        user_id: userId!,
+        status: parseInt(process.env.ACTIVE_ORDER!)
+      });
+      expect(orderId).toBeGreaterThanOrEqual(1);
   });
 
   it('showActiveOrdersByUser method should return one record after creating an order with active', async () => {

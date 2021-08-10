@@ -142,7 +142,7 @@ var ProductStore = /** @class */ (function () {
                         return [4 /*yield*/, database_1.default.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = 'SELECT * FROM products INNER JOIN orders ON products.id = orders.product_id ORDER BY orders.quantity DESC LIMIT 5';
+                        sql = 'SELECT products.name AS name, SUM(quantity) AS quantity FROM order_products INNER JOIN products on products.id = order_products.product_id GROUP BY order_products.product_id, products.name ORDER BY SUM(order_products.quantity) DESC LIMIT 5';
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         result = _a.sent();
@@ -150,7 +150,7 @@ var ProductStore = /** @class */ (function () {
                         return [2 /*return*/, result.rows];
                     case 3:
                         err_4 = _a.sent();
-                        throw new Error("Could not get products. Error: " + err_4);
+                        throw new Error("Could not get top five popular products. Error: " + err_4);
                     case 4: return [2 /*return*/];
                 }
             });

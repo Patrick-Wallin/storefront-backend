@@ -3,15 +3,17 @@ import supertest from 'supertest';
 import { Product, ProductStore } from '../../../src/models/products';
 import { User, UserStore } from '../../../src/models/users';
 import { Order, OrderStore } from '../../../src/models/orders';
+import { OrderProducts, OrderProductsStore } from '../../../src/models/order_products';
 
 const request = supertest(app);
 const store = new ProductStore();
 const userStore = new UserStore();
 const orderStore = new OrderStore();
+const orderProductsStore = new OrderProductsStore();
 
-describe('Testing Products - API', function () {
-  const name : string = "Cyberpower PC";
-  const price : number = 1450.75;
+describe('Testing Orders - API', function () {
+  const name : Array<string> = ["Cyberpower PC", "Bill Gates PC"];
+  const price : Array<number> = [1450.75, 500.78];
   const categoryId : number = 12;
   const firstName : string = "Maria";
   const lastName : string = "Tester";
@@ -19,25 +21,32 @@ describe('Testing Products - API', function () {
   const quantity : number = 500;
 
   let token : string = '';
-  let productId : number = 0;
+  let productId : Array<number> = new Array<number>();
   let userId : number = 0;
-  let orderId : Array<number> = new Array<number>();
+  let orderProductsId : Array<number> = new Array<number>();
+  let orderId : number = 0;
 
   beforeAll(async() => {
     let response = await request.post('/user').send({firstname : firstName, lastname: lastName, password: password});    
     token = response.body;
     userId = await userStore.getUserIdBasedOnNames(firstName, lastName);
 
-    response = await request.post('/product').set('Authorization', 'Bearer ' + token).send({name : name, price: price, category_id: categoryId});
-    productId = response.body;
+    response = await request.post('/product').set('Authorization', 'Bearer ' + token).send({name : name[0], price: price[0], category_id: categoryId});
+    productId.push(response.body);
+
+    response = await request.post('/product').set('Authorization', 'Bearer ' + token).send({name : name[1], price: price[1], category_id: categoryId});
+    productId.push(response.body);
   });
 
-  afterAll(async() => {
+  afterAll(async() => {      
     let result;
-    for(let i = 0; i < orderId.length; i++) {
-        result = await orderStore.delete(orderId[i]);
+    for(let i = 0; i < orderProductsId.length; i++) {
+        result = await orderProductsStore.delete(orderProductsId[i]);
     }
-    result = await store.delete(productId);
+    result = await orderStore.delete(orderId);
+    for(let i = 0; i < productId.length; i++) {
+        result = await store.delete(productId[i]);
+    }
     result = await userStore.delete(userId);
   });
 
@@ -55,13 +64,11 @@ describe('Testing Products - API', function () {
 
   it('Create Order with responsing in order id', async () => {
     const orderIdFromStore = await orderStore.create({
-        product_id: productId,
-        quantity: quantity,
         user_id: userId,
         status: parseInt(process.env.ACTIVE_ORDER!)
     });
+    orderId = orderIdFromStore;
     expect(orderIdFromStore).toBeGreaterThanOrEqual(1);
-    orderId.push(orderIdFromStore);
   });
 
   it('respond with get as /orders/${userId} - status 200 (one record - active)', async () => {
@@ -71,7 +78,7 @@ describe('Testing Products - API', function () {
   });
 
   it('Change order status to complete for ${orderId}', async () => {
-    const rowsToBeUpdated = await orderStore.changeOrderToBeCompletedByOrder(orderId[0]);
+    const rowsToBeUpdated = await orderStore.changeOrderToBeCompletedByOrder(orderId);
     expect(rowsToBeUpdated).toBeGreaterThanOrEqual(1);
   });
 
@@ -83,44 +90,50 @@ describe('Testing Products - API', function () {
 
   // top five popular! 
   it('Show Top Five Popular. get as /top-five-popular-products', async () => {
-    // Create four more orders first with different number of quantity
-    let orderIdFromStore = await orderStore.create({
-        product_id: productId,
-        quantity: 40,
-        user_id: userId,
-        status: parseInt(process.env.ACTIVE_ORDER!)
+    // Create two different products with two same products on same order id
+    let orderProductIdFromStore = await orderProductsStore.create({
+        order_id: orderId,
+        product_id: productId[0],
+        quantity: 50
     });
+    orderProductsId.push(orderProductIdFromStore);
 
-    orderId.push(orderIdFromStore);
-
-    orderIdFromStore = await orderStore.create({
-        product_id: productId,
-        quantity: 100,
-        user_id: userId,
-        status: parseInt(process.env.ACTIVE_ORDER!)
+    orderProductIdFromStore = await orderProductsStore.create({
+        order_id: orderId,
+        product_id: productId[0],
+        quantity: 100
     });
+    orderProductsId.push(orderProductIdFromStore);
 
-    orderId.push(orderIdFromStore);
-
-    orderIdFromStore = await orderStore.create({
-        product_id: productId,
-        quantity: 1,
-        user_id: userId,
-        status: parseInt(process.env.ACTIVE_ORDER!)
+    orderProductIdFromStore = await orderProductsStore.create({
+        order_id: orderId,
+        product_id: productId[1],
+        quantity: 25
     });
+    orderProductsId.push(orderProductIdFromStore);
 
-    orderId.push(orderIdFromStore);
-
-    orderIdFromStore = await orderStore.create({
-        product_id: productId,
-        quantity: 5,
-        user_id: userId,
-        status: parseInt(process.env.ACTIVE_ORDER!)
+    orderProductIdFromStore = await orderProductsStore.create({
+        order_id: orderId,
+        product_id: productId[1],
+        quantity: 75
     });
+    orderProductsId.push(orderProductIdFromStore);
 
-    orderId.push(orderIdFromStore);
+    orderProductIdFromStore = await orderProductsStore.create({
+        order_id: orderId,
+        product_id: productId[1],
+        quantity: 5
+    });
+    orderProductsId.push(orderProductIdFromStore);
+
+    orderProductIdFromStore = await orderProductsStore.create({
+        order_id: orderId,
+        product_id: productId[1],
+        quantity: 1
+    });
+    orderProductsId.push(orderProductIdFromStore);
 
     const response = await request.get(`/top-five-popular-products`);
-    expect(response.body).toHaveSize(5);
+    expect(response.body).toHaveSize(2);
   });
 });

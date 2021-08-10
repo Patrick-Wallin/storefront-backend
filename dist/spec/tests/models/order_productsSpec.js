@@ -37,12 +37,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var orders_1 = require("../../../src/models/orders");
+var order_products_1 = require("../../../src/models/order_products");
 var users_1 = require("../../../src/models/users");
 var products_1 = require("../../../src/models/products");
-var store = new orders_1.OrderStore();
+var store = new order_products_1.OrderProductsStore();
+var orderStore = new orders_1.OrderStore();
 var userStore = new users_1.UserStore();
 var productStore = new products_1.ProductStore();
-describe("Order Model", function () {
+describe("OrderProducts Model", function () {
     var firstName = "Patrick";
     var lastName = "Wallin";
     var productName = "Bill Gates PC";
@@ -52,6 +54,7 @@ describe("Order Model", function () {
     var userId = 0;
     var productId = 0;
     var orderId = 0;
+    var orderProductsId = new Array();
     beforeAll(function () { return __awaiter(void 0, void 0, void 0, function () {
         var result, product;
         return __generator(this, function (_a) {
@@ -71,111 +74,82 @@ describe("Order Model", function () {
                     return [4 /*yield*/, productStore.create(product)];
                 case 2:
                     productId = _a.sent();
+                    return [4 /*yield*/, orderStore.create({
+                            user_id: userId,
+                            status: parseInt(process.env.ACTIVE_ORDER)
+                        })];
+                case 3:
+                    orderId = _a.sent();
                     return [2 /*return*/];
             }
         });
     }); });
     afterAll(function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result, result, result;
+        var _i, orderProductsId_1, id, result, result, result, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(orderId != undefined)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, store.delete(orderId)];
+                    if (!(orderProductsId != undefined)) return [3 /*break*/, 4];
+                    _i = 0, orderProductsId_1 = orderProductsId;
+                    _a.label = 1;
                 case 1:
-                    result = _a.sent();
-                    _a.label = 2;
+                    if (!(_i < orderProductsId_1.length)) return [3 /*break*/, 4];
+                    id = orderProductsId_1[_i];
+                    return [4 /*yield*/, store.delete(id)];
                 case 2:
-                    if (!(userId != undefined)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, userStore.delete(userId)];
-                case 3:
                     result = _a.sent();
-                    _a.label = 4;
+                    _a.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
                 case 4:
-                    if (!(productId != undefined)) return [3 /*break*/, 6];
-                    return [4 /*yield*/, productStore.delete(productId)];
+                    if (!(orderId != undefined)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, orderStore.delete(orderId)];
                 case 5:
                     result = _a.sent();
                     _a.label = 6;
-                case 6: return [2 /*return*/];
+                case 6:
+                    if (!(userId != undefined)) return [3 /*break*/, 8];
+                    return [4 /*yield*/, userStore.delete(userId)];
+                case 7:
+                    result = _a.sent();
+                    _a.label = 8;
+                case 8:
+                    if (!(productId != undefined)) return [3 /*break*/, 10];
+                    return [4 /*yield*/, productStore.delete(productId)];
+                case 9:
+                    result = _a.sent();
+                    _a.label = 10;
+                case 10: return [2 /*return*/];
             }
         });
     }); });
     it('should have a create method', function () {
         expect(store.create).toBeDefined();
     });
-    it('should have a showActiveOrdersByUser method', function () {
-        expect(store.showActiveOrdersByUser).toBeDefined();
-    });
-    it('should have a showCompletedOrdersByUser method', function () {
-        expect(store.showCompletedOrdersByUser).toBeDefined();
-    });
-    it('create method should add an order', function () { return __awaiter(void 0, void 0, void 0, function () {
+    it('create method should add an order and product into order_products', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var listOfOrderProducts, _i, listOfOrderProducts_1, val, id;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, store.create({
-                        user_id: userId,
-                        status: parseInt(process.env.ACTIVE_ORDER)
-                    })];
+                case 0:
+                    listOfOrderProducts = new Array();
+                    listOfOrderProducts.push({ order_id: orderId, quantity: 50, product_id: productId });
+                    listOfOrderProducts.push({ order_id: orderId, quantity: 100, product_id: productId });
+                    _i = 0, listOfOrderProducts_1 = listOfOrderProducts;
+                    _a.label = 1;
                 case 1:
-                    /*
-                  orderId = await store.create({
-                    product_id: productId,
-                    quantity: orderQuantity,
-                    user_id: userId!,
-                    status: parseInt(process.env.ACTIVE_ORDER!)
-                  });
-                  */
-                    orderId = _a.sent();
-                    expect(orderId).toBeGreaterThanOrEqual(1);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    it('showActiveOrdersByUser method should return one record after creating an order with active', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, store.showActiveOrdersByUser(userId)];
-                case 1:
-                    result = _a.sent();
-                    expect(result).toHaveSize(1);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    it('showCompletedOrdersByUser method should return no record after creating an order that was active', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, store.showCompletedOrdersByUser(userId)];
-                case 1:
-                    result = _a.sent();
-                    expect(result).toHaveSize(0);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    it('changeOrderToBeCompletedByOrder method should return one updated record after creating an order that was active', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, store.changeOrderToBeCompletedByOrder(orderId)];
-                case 1:
-                    result = _a.sent();
-                    expect(result).toEqual(1);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    it('showCompletedOrdersByUser method should return one record after updating the order that was active', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, store.showCompletedOrdersByUser(userId)];
-                case 1:
-                    result = _a.sent();
-                    expect(result).toHaveSize(1);
+                    if (!(_i < listOfOrderProducts_1.length)) return [3 /*break*/, 4];
+                    val = listOfOrderProducts_1[_i];
+                    return [4 /*yield*/, store.create(val)];
+                case 2:
+                    id = _a.sent();
+                    orderProductsId === null || orderProductsId === void 0 ? void 0 : orderProductsId.push(id);
+                    _a.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4:
+                    expect(orderProductsId).toHaveSize(2);
                     return [2 /*return*/];
             }
         });

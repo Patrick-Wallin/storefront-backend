@@ -46,28 +46,29 @@ var OrderStore = /** @class */ (function () {
     }
     OrderStore.prototype.create = function (order) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, conn, result, err_1;
+            var sql, conn, result, orderId, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        sql = 'INSERT INTO orders (product_id, quantity, user_id, status) VALUES($1, $2, $3, $4) RETURNING *';
+                        sql = 'INSERT INTO orders (user_id, status) VALUES($1, $2) RETURNING id';
                         return [4 /*yield*/, database_1.default.connect()];
                     case 1:
                         conn = _a.sent();
-                        return [4 /*yield*/, conn.query(sql, [
-                                order.product_id,
-                                order.quantity,
-                                order.user_id,
-                                order.status,
-                            ])];
+                        return [4 /*yield*/, conn.query(sql, [order.user_id, order.status])];
                     case 2:
                         result = _a.sent();
+                        orderId = result.rows[0].id;
                         conn.release();
-                        return [2 /*return*/, result.rows[0].id];
+                        return [2 /*return*/, orderId];
                     case 3:
                         err_1 = _a.sent();
-                        throw new Error("Could not add new order " + order.product_id + ". Error: " + err_1);
+                        /*
+                        throw new Error(
+                          `Could not add new order ${order.product_id}. Error: ${err}`
+                        );
+                        */
+                        throw new Error("Could not add new order. Error: " + err_1);
                     case 4: return [2 /*return*/];
                 }
             });

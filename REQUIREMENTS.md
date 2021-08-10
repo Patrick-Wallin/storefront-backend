@@ -40,8 +40,11 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 #### Orders
 - id : PRIMARY KEY : integer
-- id of each product in the order: integer - reference from product (id)
-- quantity of each product in the order: integer
 - user_id: integer - reference from user (id)
 - status of order (active or complete): smallint (1 = active, 2 = complete)
 
+#### Order_Products
+- id : PRIMARY KEY : integer
+- id of each product in the product: integer - reference from product (id)
+- id of each order in the order: integer - reference from order (id)
+- quantity of each product in the order: integer

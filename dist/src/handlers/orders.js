@@ -40,8 +40,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var orders_1 = require("../models/orders");
+var order_products_1 = require("../models/order_products");
 var general_1 = __importDefault(require("./general"));
 var store = new orders_1.OrderStore();
+var orderProductsStore = new order_products_1.OrderProductsStore();
 var showActiveOrdersByUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var orders, err_1;
     return __generator(this, function (_a) {
@@ -83,27 +85,43 @@ var showCompletedOrdersByUser = function (req, res) { return __awaiter(void 0, v
     });
 }); };
 var createOrder = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var order, newOrder, err_3;
+    var order, newOrder, products, _i, products_1, val, newOrderProduct, newOrderProductId, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
+                _a.trys.push([0, 6, , 7]);
                 order = {
-                    product_id: req.body.product_id,
-                    quantity: req.body.quantity,
                     user_id: req.body.user_id,
                     status: req.body.status,
                 };
                 return [4 /*yield*/, store.create(order)];
             case 1:
                 newOrder = _a.sent();
-                return [2 /*return*/, res.json(newOrder)];
+                products = req.body.products;
+                _i = 0, products_1 = products;
+                _a.label = 2;
             case 2:
+                if (!(_i < products_1.length)) return [3 /*break*/, 5];
+                val = products_1[_i];
+                newOrderProduct = {
+                    order_id: newOrder,
+                    product_id: val.product_id,
+                    quantity: val.quantity,
+                };
+                return [4 /*yield*/, orderProductsStore.create(newOrderProduct)];
+            case 3:
+                newOrderProductId = _a.sent();
+                _a.label = 4;
+            case 4:
+                _i++;
+                return [3 /*break*/, 2];
+            case 5: return [2 /*return*/, res.json(newOrder)];
+            case 6:
                 err_3 = _a.sent();
                 res.status(400);
                 res.json(err_3);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); };

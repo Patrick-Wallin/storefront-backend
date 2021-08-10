@@ -68,24 +68,30 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
+                _a.trys.push([0, 4, , 5]);
+                if (!(!req.body.firstname || !req.body.lastname)) return [3 /*break*/, 1];
+                res.status(400);
+                res.json('firstname and lastname are required.');
+                return [3 /*break*/, 3];
+            case 1:
                 user = {
                     firstname: req.body.firstname,
                     lastname: req.body.lastname,
                     password: req.body.password,
                 };
                 return [4 /*yield*/, store.create(user)];
-            case 1:
+            case 2:
                 newUser = _a.sent();
                 token = jsonwebtoken_1.default.sign({ user: newUser }, process.env.TOKEN_SECRET);
                 res.json(token);
-                return [3 /*break*/, 3];
-            case 2:
+                _a.label = 3;
+            case 3: return [3 /*break*/, 5];
+            case 4:
                 err_2 = _a.sent();
                 res.status(400);
                 res.json(err_2);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };

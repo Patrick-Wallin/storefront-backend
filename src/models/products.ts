@@ -7,6 +7,11 @@ export type Product = {
   category_id: number;
 };
 
+export type PopularProduct = {
+  name: string;
+  quantity: number;
+};
+
 export class ProductStore {
   async index(): Promise<Product[]> {
     try {
@@ -66,17 +71,22 @@ export class ProductStore {
     }
   }
 
-  async showTopFivePopular(): Promise<Product[]> {
+  async showTopFivePopular(): Promise<PopularProduct[]> {
     try {
       const conn = await client.connect();
+      /*
       const sql =
         'SELECT * FROM products INNER JOIN orders ON products.id = orders.product_id ORDER BY orders.quantity DESC LIMIT 5';
+        */
+      const sql =
+        'SELECT products.name AS name, SUM(quantity) AS quantity FROM order_products INNER JOIN products on products.id = order_products.product_id GROUP BY order_products.product_id, products.name ORDER BY SUM(order_products.quantity) DESC LIMIT 5';
+
       const result = await conn.query(sql);
       conn.release();
 
       return result.rows;
     } catch (err) {
-      throw new Error(`Could not get products. Error: ${err}`);
+      throw new Error(`Could not get top five popular products. Error: ${err}`);
     }
   }
 

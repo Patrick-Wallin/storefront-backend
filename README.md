@@ -54,7 +54,7 @@ Grant all priviledges
 
 Establish new tables on the database, storefront_test
 - Open new terminal and change to the root directory of this project
-- Type the following at the command: npm run migrate-up
+- Type the following at the command: npm run migrate-up-test
 
 ## Environment Variables
 - Create new file called .env on your root directory
@@ -80,6 +80,22 @@ npm install
 Build or Convert TypeScript to JavaScript
 ```
 npm run build
+```
+Run migration for test (up)
+```
+npm run migrate-up-test
+```
+Run migration for test (down)
+```
+npm run migrate-down-test
+```
+Run migration for dev (up)
+```
+npm run migrate-up-dev
+```
+Run migration for dev (down)
+```
+npm run migrate-down-dev
 ```
 Start the server which will start nodemon based on src/index.ts
 ```
@@ -152,8 +168,19 @@ Orders
   - Input: user id 
   - Authorization: Yes
   - Return: list of completed orders in JSON
-
+- Create order [POST]
+  - Example: http://localhost:3000/order
+  - Input: user_id, status, products (array)
+    - Example: { "products": [ { "product_id" : 1, "quantity" : 5 }, {  "product_id" : 1, "quantity" : 50 } ], "user_id": 1, "status": 1 }
+  - Authorization: none
+  - Return order id
+  
 Products 
+- Create new product [POST]
+  - Example: http://localhost:3000/product
+  - Input: name, price, category_id
+  - Authorization: none
+  - Return product id
 - Get list of products [GET]
   - Example: http://localhost:3000/products
   - Input: none

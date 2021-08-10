@@ -40,7 +40,6 @@ class ProductStore {
                 product.category_id,
             ]);
             conn.release();
-            console.log(result);
             if (result.rowCount > 0) {
                 return result.rows[0].id;
             }

@@ -4,7 +4,7 @@ import {
   StacktraceOption,
 } from 'jasmine-spec-reporter';
 import SuiteInfo = jasmine.SuiteInfo;
-import JasmineStartedInfo = jasmine.JasmineStartedInfo
+import JasmineStartedInfo = jasmine.JasmineStartedInfo;
 
 class CustomProcessor extends DisplayProcessor {
   public displayJasmineStarted(info: JasmineStartedInfo, log: string): string {

@@ -50,10 +50,25 @@ CREATE TABLE products (
     UNIQUE (name, category_id)
 );
 
+/*
+Needed to modify table by having one-to-many relationship between order and products.
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     product_id int REFERENCES products(id),
     quantity int,    
     user_id int REFERENCES users(id),
     status smallint
+);
+*/
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id int REFERENCES users(id),
+    status smallint
+);
+
+CREATE TABLE order_products (
+    id SERIAL PRIMARY KEY,
+    product_id int REFERENCES products(id),
+    order_id int REFERENCES orders(id),
+    quantity int
 );
